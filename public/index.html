@@ -10,9 +10,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <style>
     //sourced from Stakeoverflow  https://stackoverflow.com/questions/24309721/in-bootstrap-3-how-to-change-the-distance-between-rows-in-vertica
-    .row-m-t{
-      margin-top : 10px
-    }
+    .top-buffer { margin-top:20px; }
+
     </style>
     <title>Hello Mr. Reversi!</title>
   </head>
@@ -25,26 +24,37 @@
         </div>
       </div>
       <!--spacer row-->
-      <div class="row row-m-t">
-        <div class="col"></div>
+      <div class="row top-buffer">
+        <div class="col">
+        	</br>
+        </div>
     </div>
 
       <div class="row">
         <div class="col">
-          <a href="name.html" class="btn-lg btn-secondary">Let's Go!</a>
+          <a href="name.html" class="btn btn-primary btn-lg">Let's Go!</a>
         </div>
       </div>
+         <div class="row top-buffer">
+        <div class="col">
+        	</br>
+        </div>
+    </div>
       <div class="row">
         <div class="col">
-          <img class="img-fluid" src="assets/images/bottom-banner.png" alt="Reversi logo bottom" style="width:0%"/></br>
+          <img class="img-fluid" src="assets/images/bottom-banner.png" alt="Reversi logo bottom" style="width:40%"/>
         </div>
-
       </div>
+   <div class="row top-buffer">
+        <div class="col">
+        	</br>
+        </div>
+    </div>
         <div class="row">
           <div class="col">
             <a href="about.html" class="btn-lg btn-info">About</a>
             <a href="https://en.wikipedia.org/wiki/Reversi" class="btn-lg btn-dark">Rules</a>
-            <a href="https://youtu.be/Gs069dndIYk?t=20" class="btn-lg btn-warning">Do you Remember?</a>
+            <a href="https://youtu.be/Gs069dndIYk?t=20" class="btn-lg btn-warning" target="_blank">Do you Remember?</a>
           </div>
       </div>
     </div>
