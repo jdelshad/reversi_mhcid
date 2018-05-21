@@ -22,7 +22,7 @@ console.log(getURlParameter('username'));
 
 /* CONNECT TO SOCKET.IO */
 
-var socket = io.content();
+var socket = io.connect();
 
 socket.on('log',function(array){
   console.log.apply(console,array);
