@@ -261,6 +261,72 @@ socket.on('join_room',function(payload){
 
         log('invite success');
 
+        //uninvite command
+
+            socket.on('uninvite',function(payload){
+              log('uninvite with '+JSON.stringify(payload));
+
+              //check payload
+              if(('undefined' === typeof payload) || !payload){
+                var error_message = 'uninvite had no payload; cmd aborted';
+                log(error_message);
+                socket.emit('uninvite_response' , {
+                                                      result: 'fail',
+                                                      Message: error_message
+                                                    });
+                return;
+                }
+              // is legit user?
+                var username = players[socket.id].username;
+                if(('undefined' === typeof username) || !username){
+                  var error_message = 'uninvite can not ID username; cmd aborted';
+                  log(error_message);
+                  socket.emit('uninvite_response' , {
+                                                        result: 'fail',
+                                                        Message: error_message
+                                                      });
+                   return;
+                }
+                var requested_user = payload.requested_user;
+                if(('undefined' === typeof requested_user) || !requested_user){
+                  var error_message = 'uninvite user not specified a username; cmd aborted';
+                  socket.emit('uninvite_response' , {
+                                                        result: 'fail',
+                                                        Message: error_message
+                                                      });
+                   return;
+                }
+
+                var room = players[socket.id].room;
+                var roomObject = io.sockets.adapter.rooms[room];
+                // make sure user is invited to rooms
+                if(!roomObject.sockets.hasOwnProperty(requested_user)){
+                  var error_message = 'invite requested a user not in room; cmd aborted';
+                  log(error_message);
+                  socket.emit('uninvite_response' , {
+                                                        result: 'fail',
+                                                        Message: error_message
+                                                      });
+                   return;
+
+                }
+
+                var success_data = {
+                                      result: 'success',
+                                      socket_id: requested_user
+                };
+
+                socket.emit('uninvite_response',success_data);
+
+                var success_data = {
+
+                                    result: 'success',
+                                    socket_id: socket.id
+                };
+
+                socket.to(requested_user).emit('uninvited',success_data);
+
+                log('uninvite success');
 
 
       });
@@ -281,3 +347,4 @@ socket.on('join_room',function(payload){
     });
 
    });
+ });
