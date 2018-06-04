@@ -161,7 +161,7 @@ socket.on('join_room',function(payload){
                                             });
          return;
       }
-      var username = payload.username;
+      var username = players[socket.id].username;
       if(('undefined' === typeof username) || !username){
         var error_message = 'join_room did not specify a username; cmd aborted';
         socket.emit('send_message_response' , {
@@ -188,7 +188,7 @@ socket.on('join_room',function(payload){
 
       };
 
-      io.sockets.in(room).emit('send_message_response',success_data);
+      io.in(room).emit('send_message_response',success_data);
       log('Message sent to room ' + room + ' by  '+ username);
 
 
@@ -330,6 +330,79 @@ socket.on('join_room',function(payload){
 
 
       });
+
+      //play command
+
+          socket.on('game_start',function(payload){
+            log('game_start with '+JSON.stringify(payload));
+
+            //check payload
+            if(('undefined' === typeof payload) || !payload){
+              var error_message = 'game_start had no payload; cmd aborted';
+              log(error_message);
+              socket.emit('game_start_response' , {
+                                                    result: 'fail',
+                                                    Message: error_message
+                                                  });
+              return;
+              }
+            // is legit user?
+              var username = players[socket.id].username;
+              if(('undefined' === typeof username) || !username){
+                var error_message = 'game_start can not ID username; cmd aborted';
+                log(error_message);
+                socket.emit('game_start_response' , {
+                                                      result: 'fail',
+                                                      Message: error_message
+                                                    });
+                 return;
+              }
+              var requested_user = payload.requested_user;
+              if(('undefined' === typeof requested_user) || !requested_user){
+                var error_message = 'game_start user not specified a username; cmd aborted';
+                socket.emit('game_start_response' , {
+                                                      result: 'fail',
+                                                      Message: error_message
+                                                    });
+                 return;
+              }
+
+              var room = players[socket.id].room;
+              var roomObject = io.sockets.adapter.rooms[room];
+              // make sure user is invited to rooms
+              if(!roomObject.sockets.hasOwnProperty(requested_user)){
+                var error_message = 'game_start requested a user not in room; cmd aborted';
+                log(error_message);
+                socket.emit('game_start_response' , {
+                                                      result: 'fail',
+                                                      Message: error_message
+                                                    });
+                 return;
+
+              }
+
+              var game_id = Math.floor((1+Math.random()) * 0x10000.toString(16).substring(1));
+              var success_data = {
+                                    result: 'success',
+                                    socket_id: requested_user,
+                                    game_id: game_id
+              };
+
+              socket.emit('game_start_response',success_data);
+
+              var success_data = {
+
+                                  result: 'success',
+                                  socket_id: socket.id,
+                                  game_id: game_id
+              };
+
+              socket.to(requested_user).emit('game_start_response',success_data);
+
+              log('game_start_response success');
+
+
+    });
 
     socket.on('disconnect',function(){
       log('An alien has disconnected '+JSON.stringify(players[socket.id]));
