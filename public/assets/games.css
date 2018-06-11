@@ -30,13 +30,17 @@ table#game_board td{
   border-style: solid;
   border-width: 1px;
   border-color: white;
-  padding: 5px;
+  padding: 2px;
 }
 #messages p{
   margin:0px;
 }
 
+td.hovered_over:hover {
+  background: url("images/hover.gif");
+  background-size: 100%;
+}
 .center_div{
     margin: 0 auto;
-    width:35% 
+    width:50%
 }
