@@ -261,3 +261,84 @@ $(function(){
   console.log('*** Client Log Message: \'join_room\' payload: '+JSON.stringify(payload));
   socket.emit('join_room', payload);
 });
+
+//handle games start from server
+
+var old_board= [
+                ['?','?','?','?','?','?','?','?'], //1
+                ['?','?','?','?','?','?','?','?'], //2
+                ['?','?','?','?','?','?','?','?'], //3
+                ['?','?','?','?','?','?','?','?'], //4
+                ['?','?','?','?','?','?','?','?'], //5
+                ['?','?','?','?','?','?','?','?'], //6
+                ['?','?','?','?','?','?','?','?'], //7
+                ['?','?','?','?','?','?','?','?']  //8
+
+];
+
+socket.on('games_update', function(payload){
+  console.log('*** Client Log Message: \'game_update\' payload: '+JSON.stringify(payload));
+  if(payload.result == 'fail'){
+    console.log(payload.message);
+    window.location.href = 'lobby.html?username='+username;
+    alert(payload.message);
+    return;
+  };
+
+  //check for good payload
+  var board =  payload.game.board;
+  if('undefined' == typeof board || !board){
+    console.log('internal error bad board update from server, death to all!')
+    return;
+  }
+
+  //update color
+
+  var row,column;
+  for(row =0; row < 8; row++){
+    for(column =0; column < 8; column++);
+    //if board space upchanged
+    if(old_board[row][column] != board[row][column]){
+      if(old_board[row][column] == '?' && board[row][column] == ' '){
+        $('#'+row+'_'+column).html('<img src="assets/images/empty.gif" alt="empty square/>"');
+      }
+      else if(old_board[row][column] == '?' && board[row][column] == 'w'){
+        $('#'+row+'_'+column).html('<img src="assets/images/White.gif" alt="white square/>"');
+      }
+      else if(old_board[row][column] == '?' && board[row][column] == 'b'){
+        $('#'+row+'_'+column).html('<img src="assets/images/Black.gif" alt="black square/>"');
+      }
+      else if(old_board[row][column] == ' ' && board[row][column] == 'w'){
+        $('#'+row+'_'+column).html('<img src="assets/images/White.gif" alt="white square/>"');
+      }
+      else if(old_board[row][column] == ' ' && board[row][column] == 'b'){
+        $('#'+row+'_'+column).html('<img src="assets/images/Black.gif" alt="black square/>"');
+      }
+      else if(old_board[row][column] == 'w' && board[row][column] == ' '){
+        $('#'+row+'_'+column).html('<img src="assets/images/empty.gif" alt="empty square/>"');
+      }
+      else if(old_board[row][column] == 'b' && board[row][column] == ' '){
+        $('#'+row+'_'+column).html('<img src="assets/images/empty.gif" alt="empty square/>"');
+      }
+      else if(old_board[row][column] == 'w' && board[row][column] == 'b'){
+        $('#'+row+'_'+column).html('<img src="assets/images/whitetoblack.gif" alt="black square/>"');
+      }
+      else if(old_board[row][column] == 'b' && board[row][column] == 'w'){
+        $('#'+row+'_'+column).html('<img src="assets/images/blacktowhite.gif" alt="white square/>"');
+      }
+      else{
+        $('#'+row+'_'+column).html('<img src="assets/images/error.gif" alt="error/>"');
+      };
+    }
+  }
+
+  //animate changes
+
+
+
+
+
+  //check for good games game_update
+
+  old_board = board;
+});
