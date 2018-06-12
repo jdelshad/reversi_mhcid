@@ -1,5 +1,7 @@
 .top-buffer { margin-top:20px; }
 
+.small-buffer { margin-top:8px; }
+
 body{
   background-image: url("images/architecture-buildings-city-373965.jpg");
   color:#fff;
@@ -41,8 +43,17 @@ td.hovered_over:hover {
   background-size: 100% 100%;
 }
 
+.emptyGif{
+   z-index: -1; position:relative;
+}
 
 .center_div{
     margin: 0 auto;
     width:50%
+}
+#whitesum{
+  color:white;
+}
+#blacksum{
+  color:white;
 }
