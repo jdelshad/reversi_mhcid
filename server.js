@@ -146,6 +146,20 @@ socket.on('join_room',function(payload){
 
 
   });
+  socket.on('disconnect',function(){
+    log('An alien has disconnected '+JSON.stringify(players[socket.id]));
+
+    if('undefined' !== typeof players[socket.id] && players[socket.id]){
+      var username = players[socket.id].username;
+      var room = players[socket.id].room;
+      var payload = {
+                      username: username,
+                      socket_id: socket.id
+      };
+      delete players[socket.id];
+      io.in(room).emit('player_disconnected',payload);
+    }
+  });
 
   socket.on('send_message',function(payload){
     log('server received a command','send_message',payload);
@@ -187,7 +201,6 @@ socket.on('join_room',function(payload){
 
       var success_data = {
                             result: 'success',
-                            room: room,
                             username: username,
                             message: message
 
@@ -198,20 +211,7 @@ socket.on('join_room',function(payload){
 
 
     });
-    socket.on('disconnect',function(){
-      log('An alien has disconnected '+JSON.stringify(players[socket.id]));
 
-      if('undefined' !== typeof players[socket.id] && players[socket.id]){
-        var username = players[socket.id].username;
-        var room = players[socket.id].room;
-        var payload = {
-                        username: username,
-                        socket_id: socket.id
-        };
-        delete players[socket.id];
-        io.in(room).emit('player_disconnected',payload);
-      }
-    });
 
 //invite command
 
@@ -560,7 +560,7 @@ function create_new_game(){
   var d = new Date();
   new_game.last_move_time = d.getTime();
 
-  new_game.whose_turn = 'white';
+  new_game.whose_turn = 'black';
 
   new_game.board = [
 		[' ',' ',' ',' ',' ',' ',' ',' ',],
@@ -617,32 +617,31 @@ function send_game_update(socket, game_id, message){
 
   //assign this socket a color
   //if cur player does not have color
-  if((games[game_id].player_white.socket != socket.id) && (games[game_id].player_black.socket != socket.id)){
-    console.log('player is not assigned a color'+ socket.id);
-
-    if((games[game_id].player_black_socket !== '') && (games[game_id].player_white_socket !== '')){
-      games[game_id].player_white.socket = '';
-      games[game_id].player_white.username = '';
-      games[game_id].player_black.socket = '';
-      games[game_id].player_black.username = '';
-    }
-  }
+  if ((games[game_id].player_white.socket !== socket.id) && (games[game_id].player_black.socket !== socket.id)) {
+		console.log('Player isn\'t assigned a color: '+ socket.id);
+		// and there isn't a color to give them
+		if ((games[game_id].player_black.socket !== '') && (games[game_id].player_white.socket !== '')) {
+			games[game_id].player_white.socket = '';
+			games[game_id].player_white.username = '';
+			games[game_id].player_black.socket = '';
+			games[game_id].player_black.username = '';
+		}
+	}
   //assign colors if not already Done
 
-  if(games[game_id].player_white.socket === ''){
-    if(games[game_id].player_black.socket != socket.id){
-      games[game_id].player_white.socket = socket.id;
-      games[game_id].player_white.username = players[socket.id].username;
-    }
+  if (games[game_id].player_white.socket === '') {
+		if (games[game_id].player_black.socket !== socket.id) {
+			games[game_id].player_white.socket = socket.id;
+			games[game_id].player_white.username = players[socket.id].username;
+		}
+	}
 
-  }
-  if(games[game_id].player_black.socket === ''){
-    if(games[game_id].player_white.socket != socket.id){
-      games[game_id].player_black.socket = socket.id;
-      games[game_id].player_black.username = players[socket.id].username;
-    }
-
-  }
+	if (games[game_id].player_black.socket === '') {
+		if (games[game_id].player_white.socket !== socket.id) {
+			games[game_id].player_black.socket = socket.id;
+			games[game_id].player_black.username = players[socket.id].username;
+		}
+	}
   //send send_game_update
 
   var success_data = {
@@ -655,4 +654,31 @@ function send_game_update(socket, game_id, message){
 
 
   //check to see if game is over
+
+  var row,column;
+  var count =0;
+  for(row =0; row <8;row++){
+    for(column =0; column <8;column++){
+      if(games[game_id].board[row][column] !== ' '){
+        count++;
+      }
+    }
+  }
+  if(count == 64){
+    var success_data = {
+      results:  'success',
+      game: games[game_id],
+      who_won: 'everrryonnee wins',
+      game_id: game_id
+    };
+    io.in(game_id).emit('game_over', success_data);
+
+    //delete oldgames
+    setTimeout(function(id){
+      return function(){
+        delete games[id];
+      }}(game_id)
+      ,60*60*1000);
+  }
+
 }

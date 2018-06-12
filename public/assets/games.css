@@ -37,9 +37,11 @@ table#game_board td{
 }
 
 td.hovered_over:hover {
-  background: url("images/hover.gif");
-  background-size: 100%;
+  background:url("images/hover.gif");
+  background-size: 100% 100%;
 }
+
+
 .center_div{
     margin: 0 auto;
     width:50%
