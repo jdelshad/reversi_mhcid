@@ -294,17 +294,17 @@ socket.on('game_update', function(payload){
   //check for good payload
   var board = payload.game.board;
   if('undefined' == typeof board || !board){
-    console.log('internal error bad board update from server, death to all!')
+    console.log('internal error bad board update from server, death to all!');
     return;
   }
 
   //update color
   //update my color
 
-  if(socket.id === payload.game.player_white.socket){
+  if(socket.id == payload.game.player_white.socket){
     my_color = 'white';
   }
-  else if(socket.id === payload.game.player_black.socket){
+  else if(socket.id == payload.game.player_black.socket){
     my_color = 'black';
   }
   else{
@@ -373,7 +373,7 @@ socket.on('game_update', function(payload){
             payload.row = r;
             payload.column = c;
             payload.color = my_color;
-            console.log('*** Client Log Message: \'play_token payload:  '+ JSON.stringify(payload));
+            console.log('***clients log message client play token ' +JSON.stringify(payload));
             socket.emit('play_token',payload);
           };
         }(row,column));
@@ -391,7 +391,7 @@ socket.on('game_update', function(payload){
 
   //animate changes
 
-};
+}
 
   //check for good games game_update
   $('#blacksum').html(blacksum);

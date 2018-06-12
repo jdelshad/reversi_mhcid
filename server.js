@@ -507,7 +507,7 @@ socket.on('join_room',function(payload){
 
             var game = games[game_id];
             if(('undefined' === typeof game ) || !game){
-              var error_message = 'play_tocket can find game; cmd aborted';
+              var error_message = 'play_tocket can not find game; cmd aborted';
               log(error_message);
               socket.emit('play_token_response' , {
                                                     result: 'fail',
@@ -525,11 +525,11 @@ socket.on('join_room',function(payload){
 
             //exe move
 
-            if(color == 'white'){
+            if(color === 'white'){
               game.board[row][column] = 'w';
               game.whose_turn = 'black';
             }
-            else if (color == 'black') {
+            else if (color === 'black') {
               game.board[row][column] = 'b';
               game.whose_turn = 'white';
             }
@@ -560,7 +560,7 @@ function create_new_game(){
   var d = new Date();
   new_game.last_move_time = d.getTime();
 
-  new_game.whose_turn = 'black';
+  new_game.whose_turn = 'white';
 
   new_game.board = [
 		[' ',' ',' ',' ',' ',' ',' ',' ',],
